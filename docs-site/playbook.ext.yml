@@ -1,0 +1,21 @@
+site:
+  title: Demonstrate asciidoctor.js transpiled extension problem
+  start_page: component-b::index.adoc
+content:
+  sources:
+    - url: https://gitlab.com/antora/demo/demo-component-b.git
+      branches: main
+      start_path: docs
+asciidoc:
+  attributes:
+    experimental: ''
+    idprefix: ''
+    idseparator: ''
+    page-pagination: ''
+# Include the transpiled extension
+  extensions:
+    - ./vuid-expander.js
+ui:
+  bundle:
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
+    snapshot: true

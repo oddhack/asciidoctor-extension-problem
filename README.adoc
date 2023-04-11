@@ -1,0 +1,64 @@
+= asciidoctor-extension-problem
+
+Demonstration of a problem using a Ruby asciidoctor extension transpiled to
+Javascript in Antora.
+
+I've included the entire node_modules/ I'm using here, to reduce chances of
+versioning differences. I am pretty certain the Antora and asciidoctor
+module versions included here are consistent with the opal-compiler
+module version:
+
+[source,sh]
+----
+npm list
+docs-site@ /home/tree/git/asciidoctor-extension-problem/docs-site
+|---- @antora/cli@3.1.3
+|---- @antora/lunr-extension@1.0.0-alpha.8
+|---- @antora/site-generator@3.1.3
+|---- @djencks/asciidoctor-mathjax@0.0.8
+|---- asciidoctor@2.2.6
+|---- opal-compiler@1.0.13
+----
+
+== Reproduce Problem
+
+. Compile the Ruby extension to JS:
+
+[source,sh]
+----
+cd docs-site
+node compile.js
+----
+
+This converts vuid-expander.rb -> vuid-expander.js
+
+. Demonstrate that the extension can be loaded and run in asciidoctor.js:
+
+[source,sh]
+----
+npx asciidoctor -r ./vuid-expander.js test.adoc
+----
+
+. Demonstrate that the playbook *without* loading the same extension executes properly:
+
+[source,sh]
+----
+npx antora playbook.noext.yml
+----
+
+. Demonstrate that the playbook fails when loading the same extension:
+
+[source,sh]
+----
+npx antora playbook.ext.yml --stacktrace
+[04:55:16.356] FATAL (antora): Cannot read properties of undefined (reading 'length')
+    Cause: TypeError
+        at toBlock (/home/tree/git/asciidoctor-extension-problem/docs-site/node_modules/@asciidoctor/core/dist/node/asciidoctor.js:25542:25)
+        at Extensions.register (/home/tree/git/asciidoctor-extension-problem/docs-site/node_modules/@asciidoctor/core/dist/node/asciidoctor.js:25622:48)
+        at /home/tree/git/asciidoctor-extension-problem/docs-site/node_modules/@antora/asciidoc-loader/lib/config/resolve-asciidoc-config.js:56:20
+        at Array.reduce (<anonymous>)
+        at GeneratorContext.resolveAsciiDocConfig (/home/tree/git/asciidoctor-extension-problem/docs-site/node_modules/@antora/asciidoc-loader/lib/config/resolve-asciidoc-config.js:50:41)
+        at generateSite (/home/tree/git/asciidoctor-extension-problem/docs-site/node_modules/@antora/site-generator/lib/generate-site.js:13:36)
+        at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+        at async Command.parseAsync (/home/tree/git/asciidoctor-extension-problem/docs-site/node_modules/commander/lib/command.js:916:5)
+----
